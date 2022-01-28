@@ -55,7 +55,12 @@ app.get("/api/candidates/:id", (req, res) => {
 
 // delete a candidate
 app.delete("/api/candidate/:id", (req, res) => {
-  const sql = `DELETE FROM candidates WHERE id = ?`;
+    const sql = `SELECT candidates.*, parties.name 
+    AS party_name 
+    FROM candidates 
+    LEFT JOIN parties 
+    ON candidates.party_id = parties.id 
+    WHERE candidates.id = ?`;
   const params = [req.params.id];
 
   db.query(sql, params, (err, result) => {
@@ -84,8 +89,11 @@ app.post('/api/candidate', ({ body }, res) => {
       return;
     }
 
-  const sql = `INSERT INTO candidates (first_name, last_name, industry_connected)
-  VALUES (?,?,?)`;
+    const sql = `SELECT candidates.*, parties.name 
+    AS party_name 
+    FROM candidates 
+    LEFT JOIN parties 
+    ON candidates.party_id = parties.id`;
   const params = [body.first_name, body.last_name, body.industry_connected];
 
   db.query(sql, params, (err, result) => {
